@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game - Culebrita</title>
+    <title>Chicken Game - Pollitos</title>
     <style>
         * {
             margin: 0;
@@ -26,6 +26,9 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            width: 100%;
+            max-width: 500px;
         }
 
         h1 {
@@ -41,10 +44,13 @@
             padding: 15px;
             background: #f0f0f0;
             border-radius: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .score-item {
             flex: 1;
+            min-width: 100px;
         }
 
         .score-label {
@@ -65,6 +71,8 @@
             background: #f8f8f8;
             display: block;
             margin: 0 auto;
+            max-width: 100%;
+            touch-action: none;
         }
 
         .controls {
@@ -73,9 +81,106 @@
             font-size: 0.9em;
         }
 
+        /* Controles móviles - ocultos por defecto en desktop */
+        .mobile-controls {
+            display: none;
+            margin-top: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        .control-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 2em;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-button:active {
+            transform: scale(0.9);
+            background: #5568d3;
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .control-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .control-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .control-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .control-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* Mostrar controles en dispositivos móviles */
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: block;
+            }
+            
+            .controls p {
+                display: none;
+            }
+
+            .game-container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            canvas {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        /* Para detectar touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .mobile-controls {
+                display: block;
+            }
+            
+            .controls p {
+                display: none;
+            }
+        }
+
         .game-over {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -127,15 +232,38 @@
         .eating {
             animation: eatAnimation 0.3s ease-in-out;
         }
+
+        @keyframes hatchAnimation {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        .hatching {
+            animation: hatchAnimation 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>🐍 Snake Game</h1>
+        <h1>🐔 Chicken Game</h1>
         <div class="score-board">
             <div class="score-item">
                 <div class="score-label">Puntaje</div>
                 <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Pollitos</div>
+                <div class="score-value" id="chickenCount">1</div>
             </div>
             <div class="score-item">
                 <div class="score-label">Récord</div>
@@ -144,7 +272,25 @@
         </div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
         <div class="controls">
-            <p>Usa las flechas del teclado para mover la serpiente</p>
+            <p>Usa las flechas del teclado para mover el pollito</p>
+        </div>
+        
+        <!-- Controles móviles -->
+        <div class="mobile-controls">
+            <div class="controls-grid">
+                <button class="control-button control-up" id="btnUp" aria-label="Arriba">
+                    ↑
+                </button>
+                <button class="control-button control-left" id="btnLeft" aria-label="Izquierda">
+                    ←
+                </button>
+                <button class="control-button control-down" id="btnDown" aria-label="Abajo">
+                    ↓
+                </button>
+                <button class="control-button control-right" id="btnRight" aria-label="Derecha">
+                    →
+                </button>
+            </div>
         </div>
     </div>
 
@@ -162,120 +308,295 @@
         const tileCount = canvas.width / gridSize;
 
         // Variables del juego
-        let snake = [
-            { x: 10, y: 10 }
+        let chickens = [
+            { x: 10, y: 10, animating: false }
         ];
-        let food = {};
+        let seed = {};
         let dx = 0;
         let dy = 0;
         let score = 0;
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let highScore = localStorage.getItem('chickenHighScore') || 0;
         let gameLoop;
         let isGameOver = false;
         let isEating = false;
+        let hatchingChicken = null;
+
+        // Ajustar tamaño del canvas en móviles
+        function resizeCanvas() {
+            const container = document.querySelector('.game-container');
+            const maxWidth = Math.min(400, window.innerWidth - 60);
+            if (window.innerWidth <= 768) {
+                canvas.width = maxWidth;
+                canvas.height = maxWidth;
+            } else {
+                canvas.width = 400;
+                canvas.height = 400;
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         // Inicializar puntaje récord
         document.getElementById('highScore').textContent = highScore;
+        document.getElementById('chickenCount').textContent = chickens.length;
 
-        // Generar comida en posición aleatoria
-        function generateFood() {
-            food = {
-                x: Math.floor(Math.random() * tileCount),
-                y: Math.floor(Math.random() * tileCount)
+        // Función para cambiar dirección
+        function changeDirection(newDx, newDy) {
+            if (isGameOver) return;
+            
+            // Prevenir movimiento inverso
+            if ((dx === -newDx && dx !== 0) || (dy === -newDy && dy !== 0)) {
+                return;
+            }
+            
+            dx = newDx;
+            dy = newDy;
+        }
+
+        // Manejar entrada del teclado
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver) return;
+
+            switch(e.key) {
+                case 'ArrowUp':
+                    changeDirection(0, -1);
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    changeDirection(0, 1);
+                    e.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                    changeDirection(-1, 0);
+                    e.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    changeDirection(1, 0);
+                    e.preventDefault();
+                    break;
+            }
+        });
+
+        // Controles móviles - Botones táctiles
+        const btnUp = document.getElementById('btnUp');
+        const btnDown = document.getElementById('btnDown');
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+
+        // Función para manejar toque/touch
+        function setupTouchControl(button, dx, dy) {
+            const handleTouch = (e) => {
+                e.preventDefault();
+                changeDirection(dx, dy);
+            };
+
+            button.addEventListener('touchstart', handleTouch);
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+            });
+            button.addEventListener('mousedown', handleTouch);
+        }
+
+        setupTouchControl(btnUp, 0, -1);
+        setupTouchControl(btnDown, 0, 1);
+        setupTouchControl(btnLeft, -1, 0);
+        setupTouchControl(btnRight, 1, 0);
+
+        // Generar semilla en posición aleatoria
+        function generateSeed() {
+            const newTileCount = canvas.width / gridSize;
+            seed = {
+                x: Math.floor(Math.random() * newTileCount),
+                y: Math.floor(Math.random() * newTileCount)
             };
             
-            // Asegurar que la comida no aparezca sobre la serpiente
-            for (let segment of snake) {
-                if (segment.x === food.x && segment.y === food.y) {
-                    generateFood();
+            // Asegurar que la semilla no aparezca sobre los pollitos
+            for (let chicken of chickens) {
+                if (chicken.x === seed.x && chicken.y === seed.y) {
+                    generateSeed();
                     return;
                 }
             }
         }
 
-        // Dibujar la serpiente
-        function drawSnake() {
-            snake.forEach((segment, index) => {
-                if (index === 0) {
-                    // Cabeza de la serpiente
-                    ctx.fillStyle = '#2ecc71';
-                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-                    
-                    // Ojos de la serpiente
-                    ctx.fillStyle = '#fff';
-                    const eyeSize = 3;
-                    const eyeOffset = 5;
-                    
-                    if (dx === 1) { // Moviendo a la derecha
-                        ctx.fillRect(segment.x * gridSize + eyeOffset + 6, segment.y * gridSize + 5, eyeSize, eyeSize);
-                        ctx.fillRect(segment.x * gridSize + eyeOffset + 6, segment.y * gridSize + 12, eyeSize, eyeSize);
-                    } else if (dx === -1) { // Moviendo a la izquierda
-                        ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, eyeSize, eyeSize);
-                        ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 12, eyeSize, eyeSize);
-                    } else if (dy === 1) { // Moviendo abajo
-                        ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + eyeOffset + 6, eyeSize, eyeSize);
-                        ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + eyeOffset + 6, eyeSize, eyeSize);
-                    } else if (dy === -1) { // Moviendo arriba
-                        ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, eyeSize, eyeSize);
-                        ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, eyeSize, eyeSize);
-                    } else {
-                        // Sin movimiento inicial
-                        ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, eyeSize, eyeSize);
-                        ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, eyeSize, eyeSize);
-                    }
+        // Dibujar un pollito
+        function drawChicken(chicken, isMain = false) {
+            const newTileCount = canvas.width / gridSize;
+            const x = chicken.x * gridSize;
+            const y = chicken.y * gridSize;
+            const centerX = x + gridSize / 2;
+            const centerY = y + gridSize / 2;
+            const size = gridSize - 2;
+            
+            // Si está en animación de nacimiento, aplicar escala y rotación
+            let scale = 1;
+            let rotation = 0;
+            if (chicken.animating) {
+                const animProgress = chicken.animProgress || 0;
+                // Efecto de rebote con escala
+                if (animProgress < 0.4) {
+                    // Aparece creciendo
+                    scale = animProgress / 0.4;
+                } else if (animProgress < 0.7) {
+                    // Rebotar un poco
+                    scale = 1 + 0.3 * Math.sin((animProgress - 0.4) * Math.PI / 0.3);
                 } else {
-                    // Cuerpo de la serpiente
-                    ctx.fillStyle = '#27ae60';
-                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+                    scale = 1;
                 }
+                // Rotación durante el nacimiento
+                rotation = animProgress * 2 * Math.PI;
+            }
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(rotation);
+            ctx.scale(scale, scale);
+            ctx.translate(-centerX, -centerY);
+            
+            // Cuerpo del pollito (amarillo)
+            ctx.fillStyle = isMain ? '#FFD700' : '#FFEB3B';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, size / 2.5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Cabeza del pollito (un poco más arriba)
+            ctx.fillStyle = isMain ? '#FFD700' : '#FFEB3B';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size / 6, size / 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Pico (naranja)
+            ctx.fillStyle = '#FF9800';
+            ctx.beginPath();
+            let beakX = centerX;
+            let beakY = centerY - size / 6;
+            
+            // Dirección del pico según movimiento
+            if (dx === 1) {
+                beakX = centerX + size / 4;
+            } else if (dx === -1) {
+                beakX = centerX - size / 4;
+            } else if (dy === 1) {
+                beakY = centerY + size / 6;
+            } else if (dy === -1) {
+                beakY = centerY - size / 3;
+            }
+            
+            ctx.moveTo(beakX, beakY);
+            ctx.lineTo(beakX - 2, beakY - 2);
+            ctx.lineTo(beakX - 2, beakY + 2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Ojos
+            ctx.fillStyle = '#000';
+            let eye1X = centerX - size / 6;
+            let eye2X = centerX + size / 6;
+            let eyeY = centerY - size / 4;
+            
+            if (dx === 1) {
+                eye1X = centerX + size / 8;
+                eye2X = centerX + size / 8;
+            } else if (dx === -1) {
+                eye1X = centerX - size / 8;
+                eye2X = centerX - size / 8;
+            } else if (dy === 1) {
+                eyeY = centerY + size / 8;
+            } else if (dy === -1) {
+                eyeY = centerY - size / 3;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(eye1X, eyeY, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(eye2X, eyeY, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Patitas (solo para pollito principal o último)
+            if (isMain || chicken.isLast) {
+                ctx.strokeStyle = '#FF9800';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX - size / 4, centerY + size / 3);
+                ctx.lineTo(centerX - size / 4, centerY + size / 2.5);
+                ctx.moveTo(centerX + size / 4, centerY + size / 3);
+                ctx.lineTo(centerX + size / 4, centerY + size / 2.5);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+
+        // Dibujar todos los pollitos
+        function drawChickens() {
+            chickens.forEach((chicken, index) => {
+                const isMain = index === 0;
+                // Marcar el último pollito para dibujar patitas
+                chicken.isLast = (index === chickens.length - 1);
+                drawChicken(chicken, isMain);
             });
         }
 
-        // Dibujar la comida (manzana)
-        function drawFood() {
-            ctx.fillStyle = '#e74c3c';
+        // Dibujar la semilla
+        function drawSeed() {
+            const centerX = seed.x * gridSize + gridSize / 2;
+            const centerY = seed.y * gridSize + gridSize / 2;
+            
+            // Semilla (marrón/beige)
+            ctx.fillStyle = '#8B4513';
             ctx.beginPath();
-            ctx.arc(
-                food.x * gridSize + gridSize / 2,
-                food.y * gridSize + gridSize / 2,
-                gridSize / 2 - 1,
-                0,
-                2 * Math.PI
-            );
+            ctx.ellipse(centerX, centerY, gridSize / 3, gridSize / 5, 0, 0, 2 * Math.PI);
             ctx.fill();
             
-            // Tallo de la manzana
-            ctx.fillStyle = '#2d5016';
-            ctx.fillRect(food.x * gridSize + gridSize / 2 - 1, food.y * gridSize + 2, 2, 4);
+            // Detalle en la semilla
+            ctx.fillStyle = '#A0522D';
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, gridSize / 4, gridSize / 6, 0, 0, 2 * Math.PI);
+            ctx.fill();
         }
 
-        // Mover la serpiente
-        function moveSnake() {
+        // Mover los pollitos
+        function moveChickens() {
             if (isGameOver || (dx === 0 && dy === 0)) return;
 
-            const head = {
-                x: snake[0].x + dx,
-                y: snake[0].y + dy
+            const mainChicken = chickens[0];
+            const newTileCount = canvas.width / gridSize;
+            const newHead = {
+                x: mainChicken.x + dx,
+                y: mainChicken.y + dy,
+                animating: false
             };
 
             // Verificar colisión con las paredes
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+            if (newHead.x < 0 || newHead.x >= newTileCount || newHead.y < 0 || newHead.y >= newTileCount) {
                 endGame();
                 return;
             }
 
-            // Verificar colisión consigo misma
-            for (let segment of snake) {
-                if (head.x === segment.x && head.y === segment.y) {
+            // Verificar colisión con otros pollitos
+            for (let chicken of chickens) {
+                if (newHead.x === chicken.x && newHead.y === chicken.y) {
                     endGame();
                     return;
                 }
             }
 
-            snake.unshift(head);
+            // Guardar posición de la cola ANTES de mover (para animación de nuevo pollito)
+            const tailPosition = chickens.length > 0 ? {
+                x: chickens[chickens.length - 1].x,
+                y: chickens[chickens.length - 1].y
+            } : null;
 
-            // Verificar si come la comida
-            if (head.x === food.x && head.y === food.y) {
+            // Mover la cabeza
+            chickens.unshift(newHead);
+
+            // Verificar si come la semilla
+            const ateSeed = newHead.x === seed.x && newHead.y === seed.y;
+            
+            if (ateSeed) {
                 score += 10;
                 document.getElementById('score').textContent = score;
                 
@@ -285,17 +606,64 @@
                     canvas.classList.remove('eating');
                 }, 300);
                 
-                generateFood();
+                // Crear nuevo pollito desde la cola (donde estaba el último pollito)
+                if (tailPosition) {
+                    const newChicken = {
+                        x: tailPosition.x,
+                        y: tailPosition.y,
+                        animating: true,
+                        animProgress: 0
+                    };
+                    
+                    // Añadir el nuevo pollito al final
+                    chickens.push(newChicken);
+                    
+                    // Animación de nacimiento con efecto de rebote
+                    // La animación se actualizará en cada frame del juego
+                    newChicken.animStart = Date.now();
+                } else {
+                    // Si no hay cola, crear en la posición del pollito principal
+                    const newChicken = {
+                        x: mainChicken.x,
+                        y: mainChicken.y,
+                        animating: true,
+                        animProgress: 0
+                    };
+                    chickens.push(newChicken);
+                    
+                    // La animación se actualizará en cada frame del juego
+                    newChicken.animStart = Date.now();
+                }
+                
+                document.getElementById('chickenCount').textContent = chickens.length;
+                generateSeed();
                 
                 // Actualizar récord
                 if (score > highScore) {
                     highScore = score;
-                    localStorage.setItem('snakeHighScore', highScore);
+                    localStorage.setItem('chickenHighScore', highScore);
                     document.getElementById('highScore').textContent = highScore;
                 }
             } else {
-                snake.pop();
+                // Si no comió, quitar la cola
+                chickens.pop();
             }
+        }
+
+        // Actualizar animaciones de pollitos
+        function updateAnimations() {
+            const animDuration = 600; // 600ms
+            chickens.forEach(chicken => {
+                if (chicken.animating && chicken.animStart) {
+                    const elapsed = Date.now() - chicken.animStart;
+                    chicken.animProgress = Math.min(elapsed / animDuration, 1);
+                    
+                    if (chicken.animProgress >= 1) {
+                        chicken.animating = false;
+                        chicken.animProgress = 1;
+                    }
+                }
+            });
         }
 
         // Dibujar todo
@@ -304,57 +672,21 @@
             ctx.fillStyle = '#f8f8f8';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Dibujar comida
-            drawFood();
+            // Dibujar semilla
+            drawSeed();
             
-            // Dibujar serpiente
-            drawSnake();
+            // Dibujar pollitos
+            drawChickens();
         }
 
         // Bucle principal del juego
         function game() {
             if (!isGameOver) {
-                moveSnake();
+                updateAnimations();
+                moveChickens();
                 draw();
             }
         }
-
-        // Manejar entrada del teclado
-        document.addEventListener('keydown', (e) => {
-            if (isGameOver) return;
-
-            // Prevenir movimiento inverso
-            switch(e.key) {
-                case 'ArrowUp':
-                    if (dy !== 1) {
-                        dx = 0;
-                        dy = -1;
-                    }
-                    e.preventDefault();
-                    break;
-                case 'ArrowDown':
-                    if (dy !== -1) {
-                        dx = 0;
-                        dy = 1;
-                    }
-                    e.preventDefault();
-                    break;
-                case 'ArrowLeft':
-                    if (dx !== 1) {
-                        dx = -1;
-                        dy = 0;
-                    }
-                    e.preventDefault();
-                    break;
-                case 'ArrowRight':
-                    if (dx !== -1) {
-                        dx = 1;
-                        dy = 0;
-                    }
-                    e.preventDefault();
-                    break;
-            }
-        });
 
         // Terminar el juego
         function endGame() {
@@ -366,19 +698,21 @@
 
         // Reiniciar el juego
         function resetGame() {
-            snake = [{ x: 10, y: 10 }];
+            chickens = [{ x: 10, y: 10, animating: false }];
             dx = 0;
             dy = 0;
             score = 0;
             isGameOver = false;
+            hatchingChicken = null;
             document.getElementById('score').textContent = 0;
+            document.getElementById('chickenCount').textContent = 1;
             document.getElementById('gameOver').classList.remove('show');
-            generateFood();
+            generateSeed();
             gameLoop = setInterval(game, 150);
         }
 
         // Inicializar el juego
-        generateFood();
+        generateSeed();
         gameLoop = setInterval(game, 150);
     </script>
 </body>
