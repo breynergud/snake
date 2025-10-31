@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breyner Peña - Desarrollador de Software Frontend</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ============================================
+           RESET Y CONFIGURACIÓN GLOBAL (Paleta Elegante y Sobria)
+           ============================================ */
+
+      /* Reset básico para eliminar estilos por defecto del navegador */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Variables CSS para colores y tipografía (elegante y sobria) */
+      :root {
+        /* Colores elegantes y sobrios */
+        --color-bg: #0d1b2a; /* Fondo principal */
+        --color-text: #eaeaea; /* Texto claro */
+        --color-primary: #415a77; /* Azul petróleo */
+        --color-secondary: #778da9; /* Azul acero */
+        --color-accent: #e0a458; /* Dorado suave */
+
+        /* Colores adicionales */
+        --color-card-bg: #1b263b; /* Fondo de tarjetas */
+        --color-border: #2e3a59; /* Bordes sutiles */
+
+        /* Tipografía */
+        --font-family: "Poppins", sans-serif;
+
+        /* Espaciado */
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 2rem;
+        --spacing-lg: 4rem;
+
+        /* Transiciones */
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+      }
+
+      /* Estilos base del body */
+      body {
+        font-family: var(--font-family);
+        /* Fondo general: Se usa el gradiente de la paleta elegante */
+        background: linear-gradient(
+          135deg,
+          var(--color-bg) 0%,
+          var(--color-card-bg) 100%
+        );
+        background-attachment: fixed;
+        color: var(--color-text);
+        line-height: 1.6;
+        overflow-x: hidden; /* Evita scroll horizontal */
+      }
+
+      /* Contenedor principal (para centrar contenido) */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 var(--spacing-sm);
+      }
+
+      /* ============================================
+           NAVEGACIÓN
+           ============================================ */
+
+      .navbar {
+        position: fixed; /* Fija la barra en la parte superior */
+        top: 0;
+        left: 0;
+        right: 0;
+        /* Fondo navbar de la paleta elegante */
+        background: rgba(27, 38, 59, 0.95);
+        backdrop-filter: blur(10px); /* Efecto de desenfoque */
+        padding: var(--spacing-sm) 0;
+        z-index: 1000; /* Asegura que esté por encima de otros elementos */
+        /* Sombra navbar de la paleta elegante */
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.3);
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Se aplica el gradiente de título del HTML original, pero con los colores de la paleta elegante */
+      .nav-brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: var(--spacing-md);
+      }
+
+      .nav-menu a {
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 400;
+        transition: color var(--transition-fast);
+        position: relative;
+      }
+
+      /* Efecto hover en enlaces del menú */
+      .nav-menu a:hover {
+        color: var(--color-accent); /* Usa el color de acento */
+      }
+
+      /* Línea animada debajo del enlace al hacer hover */
+      .nav-menu a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--color-primary),
+          var(--color-accent)
+        );
+        transition: width var(--transition-normal);
+      }
+
+      .nav-menu a:hover::after {
+        width: 100%;
+      }
+
+      /* ============================================
+           SECCIÓN HERO / PRESENTACIÓN
+           ============================================ */
+
+      .hero {
+        padding: 120px 0 var(--spacing-lg); /* Espacio superior para compensar navbar */
+        min-height: 100vh; /* Altura mínima de la ventana */
+        display: flex;
+        align-items: center;
+      }
+
+      .hero-content {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr; /* Imagen 1 columna, texto 1.5 columnas */
+        gap: var(--spacing-lg);
+        align-items: center;
+      }
+
+      /* Imagen de perfil */
+      .hero-image {
+        position: relative;
+      }
+
+      .hero-image img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        border-radius: 20px;
+        /* Sombra imagen de la paleta elegante (adaptada al color primary) */
+        box-shadow: 0 20px 60px rgba(65, 90, 119, 0.5);
+        transition: transform var(--transition-normal);
+        border: 3px solid var(--color-primary);
+      }
+
+      /* Efecto hover en la imagen */
+      .hero-image img:hover {
+        transform: scale(1.05);
+        /* Sombra hover imagen de la paleta elegante (adaptada al color primary) */
+        box-shadow: 0 25px 70px rgba(65, 90, 119, 0.7);
+      }
+
+      /* Texto del hero */
+      .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
+        /* Títulos y acentos con gradiente sobrio */
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .hero-description {
+        font-size: 1.1rem;
+        color: var(
+          --color-text
+        ); /* Se ajusta a la variable principal de texto */
+        margin-bottom: var(--spacing-md);
+        line-height: 1.8;
+      }
+
+      /* Botones del hero */
+      .hero-buttons {
+        display: flex;
+        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+      }
+
+      /* ============================================
+           BOTONES (Basados en la paleta elegante)
+           ============================================ */
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        font-family: var(--font-family);
+      }
+
+      /* Botón primario */
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-secondary)
+        );
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.4);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(65, 90, 119, 0.6);
+      }
+
+      /* Botón secundario (Usando el acento) */
+      .btn-secondary {
+        background: linear-gradient(135deg, var(--color-accent), #d4934e);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(224, 164, 88, 0.5);
+      }
+      .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(224, 164, 88, 0.7);
+      }
+
+      /* Botón de proyectos (Estilizado para la tarjeta) */
+      .btn-project {
+        background: transparent;
+        color: var(--color-accent); /* Color de acento para el texto */
+        border: 2px solid var(--color-accent); /* Borde de acento */
+      }
+
+      .btn-project:hover {
+        background: var(--color-accent);
+        color: var(
+          --color-card-bg
+        ); /* Fondo de la tarjeta para el color del texto */
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(224, 164, 88, 0.5); /* Sombra de acento */
+      }
+
+      /* ============================================
+           TÍTULOS DE SECCIÓN
+           ============================================ */
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+        /* Títulos y acentos con gradiente sobrio */
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* ============================================
+           SECCIÓN EXPERIENCIA
+           ============================================ */
+
+      .experience {
+        padding: var(--spacing-lg) 0;
+        /* Fondo de la sección adaptado a la paleta elegante */
+        background: linear-gradient(180deg, var(--color-bg) 0%, #172436 100%);
+      }
+
+      .experience-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+      }
+
+      /* Tarjeta de experiencia */
+      .experience-card {
+        /* Tarjetas y proyectos de la paleta elegante */
+        background: linear-gradient(135deg, var(--color-card-bg), #23314e);
+        padding: var(--spacing-md);
+        border-radius: 12px;
+        /* Borde izquierdo con primary de la paleta elegante */
+        border-left: 4px solid var(--color-primary);
+        /* Sombra de la paleta elegante */
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.25);
+        transition: transform var(--transition-normal),
+          box-shadow var(--transition-normal);
+      }
+
+      .experience-card:hover {
+        transform: translateX(10px); /* Se mueve ligeramente a la derecha */
+        /* Sombra hover de la paleta elegante (adaptada al acento) */
+        box-shadow: 0 8px 30px rgba(224, 164, 88, 0.3);
+      }
+
+      .experience-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-xs);
+        flex-wrap: wrap;
+      }
+
+      .experience-header h3 {
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .experience-date {
+        color: var(--color-accent);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .experience-company {
+        font-size: 1.2rem;
+        color: var(
+          --color-secondary
+        ); /* Color secundario para el nombre de la empresa */
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .experience-description {
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+
+      /* Sección de habilidades */
+      .skills-section {
+        margin-top: var(--spacing-lg);
+      }
+
+      .skills-title {
+        font-size: 2rem;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-md);
+        text-align: center;
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-md);
+      }
+
+      .skill-item {
+        /* Tarjetas y proyectos de la paleta elegante */
+        background: linear-gradient(135deg, var(--color-card-bg), #23314e);
+        padding: var(--spacing-md);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.25);
+      }
+
+      .skill-name {
+        display: block;
+        font-weight: 600;
+        color: var(--color-accent); /* Acento para el nombre de la habilidad */
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .skill-bar {
+        width: 100%;
+        height: 12px;
+        background-color: #2e3a59; /* Color de borde de la paleta elegante */
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .skill-progress {
+        height: 100%;
+        /* Degradado sobrio */
+        background: linear-gradient(
+          90deg,
+          var(--color-primary),
+          var(--color-accent)
+        );
+        border-radius: 10px;
+        transition: width 1s ease; /* Animación suave al cargar */
+        box-shadow: 0 0 10px rgba(65, 90, 119, 0.5); /* Sombra de primary */
+      }
+
+      /* ============================================
+           SECCIÓN PROYECTOS
+           ============================================ */
+
+      .projects {
+        padding: var(--spacing-lg) 0;
+      }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: var(--spacing-md);
+      }
+
+      /* Tarjeta de proyecto */
+      .project-card {
+        /* Tarjetas y proyectos de la paleta elegante */
+        background: linear-gradient(135deg, var(--color-card-bg), #23314e);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.25);
+        transition: transform var(--transition-normal),
+          box-shadow var(--transition-normal);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--color-border); /* Borde sutil */
+      }
+
+      .project-card:hover {
+        transform: translateY(-10px); /* Eleva la tarjeta */
+        /* Sombra hover de la paleta elegante */
+        box-shadow: 0 15px 50px rgba(224, 164, 88, 0.3);
+        border-color: var(--color-accent);
+      }
+
+      .project-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .project-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* La imagen cubre todo el espacio */
+        transition: transform var(--transition-normal);
+      }
+
+      /* Efecto zoom en la imagen al hover */
+      .project-card:hover .project-image img {
+        transform: scale(1.1);
+      }
+
+      .project-content {
+        padding: var(--spacing-md);
+        flex-grow: 1; /* Ocupa el espacio disponible */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .project-title {
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .project-description {
+        color: var(--color-text);
+        margin-bottom: var(--spacing-md);
+        flex-grow: 1; /* Empuja el botón hacia abajo */
+        line-height: 1.7;
+      }
+
+      /* ============================================
+           SECCIÓN CONTACTO
+           ============================================ */
+
+      .contact {
+        padding: var(--spacing-lg) 0;
+        /* Fondo de la sección adaptado a la paleta elegante */
+        background: linear-gradient(180deg, #172436 0%, var(--color-bg) 100%);
+      }
+
+      .contact-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: start;
+      }
+
+      /* Formulario de contacto */
+      .contact-form {
+        background: linear-gradient(135deg, var(--color-card-bg), #23314e);
+        padding: var(--spacing-md);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.25);
+        border: 1px solid var(--color-border);
+      }
+
+      .form-group {
+        margin-bottom: var(--spacing-md);
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: var(--spacing-xs);
+        color: var(--color-primary);
+        font-weight: 600;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        /* Inputs del formulario de la paleta elegante */
+        background-color: #2e3a59;
+        border: 2px solid var(--color-border);
+        border-radius: 8px;
+        color: var(--color-text);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        transition: border-color var(--transition-fast),
+          box-shadow var(--transition-fast);
+      }
+
+      /* Efecto focus en los inputs */
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        /* Focus de la paleta elegante */
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 3px rgba(224, 164, 88, 0.2);
+      }
+
+      /* Enlaces sociales */
+      .social-links {
+        background: linear-gradient(135deg, var(--color-card-bg), #23314e);
+        padding: var(--spacing-md);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(65, 90, 119, 0.25);
+        border: 1px solid var(--color-border);
+      }
+
+      .social-links h3 {
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-md);
+        font-size: 1.5rem;
+      }
+
+      .social-icons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+
+      .social-icon {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: 12px;
+        background-color: #2e3a59; /* Fondo de inputs/bordes */
+        border-radius: 8px;
+        color: var(--color-text);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        border: 2px solid transparent;
+      }
+
+      .social-icon:hover {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-secondary)
+        );
+        border-color: var(--color-primary);
+        transform: translateX(5px); /* Se mueve a la derecha */
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(65, 90, 119, 0.4);
+      }
+
+      .social-icon svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* ============================================
+           FOOTER
+           ============================================ */
+
+      .footer {
+        /* Footer de la paleta elegante */
+        background: linear-gradient(135deg, #0b1321, #1b263b);
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        /* Borde superior de la paleta elegante (usando el acento) */
+        border-top: 1px solid rgba(224, 164, 88, 0.3);
+      }
+
+      .footer p {
+        color: #a9b3c1; /* Un color de texto gris para el footer */
+        font-size: 0.9rem;
+      }
+
+      /* ============================================
+           DISEÑO RESPONSIVE
+           ============================================ */
+
+      /* Tablets (max-width: 768px) */
+      @media (max-width: 768px) {
+        /* Navegación responsive */
+        .nav-menu {
+          gap: var(--spacing-sm);
+          font-size: 0.9rem;
+        }
+
+        /* Hero responsive */
+        .hero-content {
+          grid-template-columns: 1fr; /* Una columna en móvil */
+          text-align: center;
+        }
+
+        .hero-title {
+          font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.5rem;
+        }
+
+        /* Contacto responsive */
+        .contact-content {
+          grid-template-columns: 1fr; /* Una columna en móvil */
+        }
+
+        /* Proyectos responsive */
+        .projects-grid {
+          grid-template-columns: 1fr; /* Una columna en móvil */
+        }
+
+        /* Habilidades responsive */
+        .skills-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Móviles pequeños (max-width: 480px) */
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.2rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+
+        .nav-brand {
+          font-size: 1.2rem;
+        }
+
+        .nav-menu {
+          gap: var(--spacing-xs);
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Animación de entrada para las tarjetas */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .project-card,
+      .experience-card,
+      .skill-item {
+        animation: fadeInUp 0.6s ease-out;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">Breyner Peña</div>
+        <ul class="nav-menu">
+          <li><a href="#presentacion">Inicio</a></li>
+          <li><a href="#experiencia">Experiencia</a></li>
+          <li><a href="#proyectos">Proyectos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section id="presentacion" class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-image">
+            <img
+              src="https://www.bing.com/images/search?view=detailV2&ccid=TuUbMPgX&id=FD5512544641EB210E0D13E87CBC037F8FD53ECD&thid=OIP.TuUbMPgXTGVbdIMXN9goywHaEu&mediaurl=https%3a%2f%2fwww.elplural.com%2fuploads%2fs1%2f13%2f92%2f33%2f9%2fbatman.jpeg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.4ee51b30f8174c655b74831737d828cb%3frik%3dzT7Vj38DvHzoEw%26pid%3dImgRaw%26r%3d0&exph=1595&expw=2500&q=batman&FORM=IRPRST&ck=F04B64E86D18E8F1C01C1EF3EB40B5A3&selectedIndex=0&itb=0"
+              alt="Breyner Peña - Desarrollador Frontend"
+            />
+          </div>
+          <div class="hero-text">
+            <h1 class="hero-title">Breyner Peña</h1>
+            <h2 class="hero-subtitle">Desarrollador de Software Frontend</h2>
+            <p class="hero-description">
+              Desarrollador frontend apasionado por crear experiencias web
+              modernas, interactivas y accesibles. Especializado en HTML, CSS,
+              JavaScript y frameworks modernos. Me encanta transformar ideas
+              creativas en código elegante y funcional.
+            </p>
+            <div class="hero-buttons">
+              <a href="#proyectos" class="btn btn-primary">Ver Proyectos</a>
+              <a href="#contacto" class="btn btn-secondary">Contactar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experiencia" class="experience">
+      <div class="container">
+        <h2 class="section-title">Experiencia</h2>
+
+        <div class="experience-list">
+          <div class="experience-card">
+            <div class="experience-header">
+              <h3>Desarrollador Frontend Senior</h3>
+              <span class="experience-date">2022 - Presente</span>
+            </div>
+            <h4 class="experience-company">Tech Innovations S.A.</h4>
+            <p class="experience-description">
+              Desarrollo de aplicaciones web complejas utilizando React y
+              Vue.js. Liderazgo en equipos de desarrollo, implementación de
+              mejores prácticas y optimización de rendimiento.
+            </p>
+          </div>
+
+          <div class="experience-card">
+            <div class="experience-header">
+              <h3>Desarrollador Frontend</h3>
+              <span class="experience-date">2020 - 2022</span>
+            </div>
+            <h4 class="experience-company">Digital Solutions Corp.</h4>
+            <p class="experience-description">
+              Creación de interfaces de usuario responsivas y accesibles.
+              Colaboración estrecha con diseñadores UX/UI para implementar
+              diseños pixel-perfect.
+            </p>
+          </div>
+
+          <div class="experience-card">
+            <div class="experience-header">
+              <h3>Desarrollador Frontend Junior</h3>
+              <span class="experience-date">2018 - 2020</span>
+            </div>
+            <h4 class="experience-company">Startup Labs</h4>
+            <p class="experience-description">
+              Desarrollo de componentes reutilizables, integración de APIs REST,
+              y mantenimiento de código legacy. Aprendizaje continuo de nuevas
+              tecnologías y frameworks.
+            </p>
+          </div>
+        </div>
+
+        <div class="skills-section">
+          <h3 class="skills-title">Habilidades Destacadas</h3>
+          <div class="skills-grid">
+            <div class="skill-item">
+              <span class="skill-name">HTML5</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 95%"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">CSS3</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 90%"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">JavaScript</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 88%"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">React</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 85%"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">Vue.js</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 80%"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">TypeScript</span>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="proyectos" class="projects">
+      <div class="container">
+        <h2 class="section-title">Proyectos</h2>
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-image">
+              <img
+                src="https://www.bing.com/images/search?view=detailV2&ccid=TuUbMPgX&id=FD5512544641EB210E0D13E87CBC037F8FD53ECD&thid=OIP.TuUbMPgXTGVbdIMXN9goywHaEu&mediaurl=https%3a%2f%2fwww.elplural.com%2fuploads%2fs1%2f13%2f92%2f33%2f9%2fbatman.jpeg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.4ee51b30f8174c655b74831737d828cb%3frik%3dzT7Vj38DvHzoEw%26pid%3dImgRaw%26r%3d0&exph=1595&expw=2500&q=batman&FORM=IRPRST&ck=F04B64E86D18E8F1C01C1EF3EB40B5A3&selectedIndex=0&itb=0"
+                alt="E-commerce Moderno"
+              />
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">E-commerce Moderno</h3>
+              <p class="project-description">
+                Plataforma de comercio electrónico desarrollada con React y
+                Node.js. Incluye carrito de compras, pasarela de pago y panel de
+                administración.
+              </p>
+              <a href="#" class="btn btn-project">Ver más</a>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-image">
+              <img
+                src="https://picsum.photos/400/250?random=2"
+                alt="Dashboard Analytics"
+              />
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">Dashboard Analytics</h3>
+              <p class="project-description">
+                Panel de control interactivo con visualizaciones de datos en
+                tiempo real. Construido con Vue.js y Chart.js para gráficos
+                dinámicos.
+              </p>
+              <a href="#" class="btn btn-project">Ver más</a>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-image">
+              <img
+                src="https://picsum.photos/400/250?random=3"
+                alt="App de Gestión"
+              />
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">App de Gestión</h3>
+              <p class="project-description">
+                Aplicación web para gestión de tareas y proyectos en equipo.
+                Funcionalidades de colaboración en tiempo real con WebSockets.
+              </p>
+              <a href="#" class="btn btn-project">Ver más</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="contact">
+      <div class="container">
+        <h2 class="section-title">Contacto</h2>
+        <div class="contact-content">
+          <div class="contact-form">
+            <form action="#" method="POST">
+              <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+              <div class="form-group">
+                <label for="mensaje">Mensaje</label>
+                <textarea
+                  id="mensaje"
+                  name="mensaje"
+                  rows="6"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Enviar Mensaje
+              </button>
+            </form>
+          </div>
+
+          <div class="social-links">
+            <h3>Sígueme</h3>
+            <div class="social-icons">
+              <a
+                href="https://linkedin.com/in/breynerpena"
+                target="_blank"
+                class="social-icon"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4.01-3.235-4.01 0v5.604h-3v-11h3v1.765c1.397-2.423 7.01-2.079 7.01 3.896v5.339z"
+                  />
+                </svg>
+                <span>LinkedIn</span>
+              </a>
+              <a
+                href="https://github.com/breynerpena"
+                target="_blank"
+                class="social-icon"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.087-.731.084-.716.084-.716 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.303.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.046.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576c4.765-1.589 8.2-6.085 8.2-11.386 0-6.627-5.373-12-12-12z"
+                  />
+                </svg>
+                <span>GitHub</span>
+              </a>
+              <a href="mailto:breynerpena@example.com" class="social-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M0 3v18h24v-18h-24zm6.623 7.929l-6.623 5.648v-10.459l6.623 4.811zm-4.141-5.929h19.035l-9.517 7.747-9.518-7.747zm7.841 9.704l.534.434.535-.435 6.4-5.223v6.024h-13.871v-6.024l6.4 5.223zm6.622-1.972l6.623-4.811v10.459l-6.623-5.648z"
+                  />
+                </svg>
+                <span>Correo</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2024 Breyner Peña. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  </body>
+</html>
